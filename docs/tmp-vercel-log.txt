@@ -1,0 +1,50 @@
+[stdout] Running build in Washington, D.C., USA (East) â iad1
+[stdout] Build machine configuration: 2 cores, 8 GB
+[stdout] Retrieving list of deployment files...
+[stdout] Previous build caches not available.
+[stdout] Downloading 49 deployment files...
+[stdout] Running "vercel build"
+[stderr] Vercel CLI 66.6.0
+[stdout] Installing dependencies...
+[stderr] npm warn Unknown env config "cache-dir". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+[stderr] npm warn deprecated eslint@9.39.5: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+[stdout] 
+[stdout] added 370 packages in 10s
+[stdout] 
+[stdout] 152 packages are looking for funding
+[stdout]   run `npm fund` for details
+[stderr] npm warn install-scripts 1 package has install scripts not yet covered by allowScripts:
+[stderr] npm warn install-scripts   esbuild@0.28.2 (postinstall: node install.js)
+[stderr] npm warn install-scripts
+[stderr] npm warn install-scripts Run `npm install-scripts ls` to review, or `npm install-scripts approve <pkg>` to allow.
+[stdout] Detected Next.js version: 15.5.29
+[stdout] Running "npm run build"
+[stderr] npm warn Unknown env config "cache-dir". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+[stdout] 
+[stdout] > thesis-lab@0.1.0 build
+[stdout] > next build
+[stdout] 
+[stdout] Attention: Next.js now collects completely anonymous telemetry regarding usage.
+[stdout] This information is used to shape Next.js' roadmap and prioritize features.
+[stdout] You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+[stdout] https://nextjs.org/telemetry
+[stdout] 
+[stdout]    â² Next.js 15.5.29
+[stdout] 
+[stdout]    Creating an optimized production build ...
+[stdout]  â Compiled successfully in 7.2s
+[stdout]    Linting and checking validity of types ...
+[stderr] Failed to compile.
+[stderr] 
+[stderr] ./src/lib/pipeline/conclude.ts:69:73
+[stderr] Type error: This comparison appears to be unintentional because the types '"ok" | "degraded"' and '"error"' have no overlap.
+[stderr] 
+[stderr] [0m [90m 67 |[39m   [90m// è¯´æï¼degradedï¼éçº§å°åç½®å¿«ç§ï¼æ°æ®ä»å¯ç¨ï¼çå®å¹´æ¥æ°æ®ï¼ï¼åªå¦å®æ æ³¨æ¥æºï¼ä¸ç®å¼±è¯æ®ï¼[39m
+[stderr]  [90m 68 |[39m   [90m// åªæ emptyï¼æ æ°æ®ï¼/errorï¼å¼å¸¸ï¼æè§ä¸ºè¯æ®ç¼ºå¤±ã[39m
+[stderr] [31m[1m>[22m[39m[90m 69 |[39m   [36mconst[39m weakEvidences [33m=[39m evidences[33m.[39mfilter((e) [33m=>[39m e[33m.[39mstatus [33m===[39m [32m"empty"[39m [33m||[39m e[33m.[39mstatus [33m===[39m [32m"error"[39m)[33m.[39mlength[33m;[39m
+[stderr]  [90m    |[39m                                                                         [31m[1m^[22m[39m
+[stderr]  [90m 70 |[39m   [36mconst[39m weakPayloads [33m=[39m payloads[33m.[39mfilter((p) [33m=>[39m p[33m.[39mstatus [33m===[39m [32m"error"[39m [33m||[39m p[33m.[39mstatus [33m===[39m [32m"empty"[39m)[33m.[39mlength[33m;[39m
+[stderr]  [90m 71 |[39m   [36mconst[39m weak [33m=[39m weakEvidences [33m+[39m weakPayloads[33m;[39m
+[stderr]  [90m 72 |[39m   [36mlet[39m level [33m=[39m v[33m.[39mlevel [36mas[39m [33mVerdictLevel[39m[33m;[39m[0m
+[stderr] Next.js build worker exited with code: 1 and signal: null
+[stderr] Error: [BUILD_UTILS_SPAWN_1] Command "npm run build" exited with 1

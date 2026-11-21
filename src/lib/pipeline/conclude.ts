@@ -66,7 +66,7 @@ export async function conclude(
   // 确定性兜底：真·无数据的证据/载荷占比 ≥ 1/3 → 无法判断
   // 说明：degraded（降级到内置快照）数据仍可用（真实年报数据），只如实标注来源，不算弱证据；
   // 只有 empty（无数据）/error（异常）才视为证据缺失。
-  const weakEvidences = evidences.filter((e) => e.status === "empty" || e.status === "error").length;
+  const weakEvidences = evidences.filter((e) => e.status === "empty").length;
   const weakPayloads = payloads.filter((p) => p.status === "error" || p.status === "empty").length;
   const weak = weakEvidences + weakPayloads;
   let level = v.level as VerdictLevel;
