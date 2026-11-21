@@ -3,7 +3,7 @@
 把一句投资命题变成 **可验证子问题 + 支持/反对/无法验证证据链 + 可追溯结论 + 结论反转条件** 的 AI 研究助理。
 
 > 同花顺 2026 校招测评 · AI 产品经理岗 ·《投资命题与多证据验证》
-> 演示地址：（部署后填写）　源码：本仓库
+> 演示地址：**https://thesis-lab-iota.vercel.app**（Vercel 部署，公开可访问）　源码：https://github.com/breakafantasy/thesis-lab
 
 ---
 
@@ -118,8 +118,10 @@ src/
 
 ## 部署
 
-- **Render（免费）**：新建 Web Service → 本仓库 → 构建 `npm run build`、启动 `npm start`，环境变量填入 `.env.example` 中的各项。
-- **Vercel（免费）**：导入本仓库即可，环境变量同上。主链路为 SSE 流式响应，已设置 `maxDuration`，超长请求可切换到 Render。
+当前线上部署：**https://thesis-lab-iota.vercel.app**（Vercel 免费版，Next.js 零配置，环境变量为 `.env.example` 中的各项密钥）。主链路为 SSE 流式响应，接口已设置 `maxDuration=300`。
+
+- **Vercel**：导入本仓库 → 在 Project Settings → Environment Variables 中配置密钥 → Deploy。
+- **自建服务器（国内访问最稳）**：任意 Linux 服务器 `npm install && npm run build && npm start`（如阿里云/腾讯云香港轻量，无需备案）。
 
 ## 需求与设计文档
 
