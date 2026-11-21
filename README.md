@@ -3,7 +3,8 @@
 把一句投资命题变成 **可验证子问题 + 支持/反对/无法验证证据链 + 可追溯结论 + 结论反转条件** 的 AI 研究助理。
 
 > 同花顺 2026 校招测评 · AI 产品经理岗 ·《投资命题与多证据验证》
-> 演示地址：**https://thesis-lab-iota.vercel.app**（Vercel 部署，公开可访问）　源码：https://github.com/breakafantasy/thesis-lab
+> 演示地址（国内直连，主）：**http://47.242.9.160**（阿里云香港 ECS 部署）
+> 演示地址（备用）：https://thesis-lab-iota.vercel.app　源码：https://github.com/breakafantasy/thesis-lab
 
 ---
 
