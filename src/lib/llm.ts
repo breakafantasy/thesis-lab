@@ -54,7 +54,7 @@ export function extractJSON(text: string): { ok: true; value: unknown } | { ok: 
   }
 }
 
-export interface ChatJSONOptions<T> {
+export interface ChatJSONOptions {
   system: string;
   user: string;
   temperature?: number;
@@ -63,7 +63,7 @@ export interface ChatJSONOptions<T> {
   validate?: (v: unknown) => string | null;
 }
 
-export async function chatJSON<T>(opts: ChatJSONOptions<T>): Promise<T> {
+export async function chatJSON<T>(opts: ChatJSONOptions): Promise<T> {
   const maxRetries = opts.maxRetries ?? 3;
   let repairHint = "";
   for (let attempt = 1; attempt <= maxRetries; attempt++) {

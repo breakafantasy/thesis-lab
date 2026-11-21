@@ -104,7 +104,7 @@ function mockLLM() {
       const input = JSON.parse(user) as { 子问题: { id: string }; 数据载荷: { id: string }[] };
       const sqId = input.子问题.id;
       const payloadIds = input.数据载荷.map((p) => p.id);
-      if (sqId.includes("2")) {
+      if (sqId.startsWith("SQ-2")) {
         return JSON.stringify({
           items: [
             { id: "evA", subQuestionId: sqId, stance: "support", claim: "扣非增速高于归母增速（见载荷）", reasoning: "载荷对比支持", payloadIds, confidence: 0.8, status: "ok" },
@@ -112,7 +112,7 @@ function mockLLM() {
           ],
         });
       }
-      if (sqId.includes("3")) {
+      if (sqId.startsWith("SQ-3")) {
         // 故意在 claim 中写一个载荷外的数值，验证防伪造兜底
         return JSON.stringify({
           items: [
@@ -248,7 +248,7 @@ describe("防伪造", () => {
     }
     expect(findForeignNumbers(task.verdict.statement, known)).toEqual([]);
     // mock 中故意写入的 9999 已被替换
-    const sq3Claims = task.evidences.filter((e) => e.subQuestionId.includes("3")).map((e) => e.claim).join(" ");
+    const sq3Claims = task.evidences.filter((e) => e.subQuestionId.startsWith("SQ-3")).map((e) => e.claim).join(" ");
     expect(sq3Claims).not.toContain("9999");
     expect(sq3Claims).toContain("见载荷");
   });

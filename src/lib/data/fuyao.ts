@@ -1,8 +1,8 @@
 // 扶摇数据源：A股行情快照/历史K线、财务报表与指标、估值、指数/板块
 // REST 端点映射集中在 ENDPOINTS 表中，拿到官方文档后只需调整此表与 extractPoints。
 
-import type { DataPoint, DataProvider, ProviderQuery, ProviderResult } from "./provider";
-import { nowISO } from "./provider";
+import type { DataPoint } from "../types";
+import { nowISO, type DataProvider, type ProviderQuery, type ProviderResult } from "./provider";
 
 const base = () => (process.env.FUYAO_BASE_URL || "").replace(/\/+$/, "");
 const key = () => process.env.FUYAO_API_KEY || "";

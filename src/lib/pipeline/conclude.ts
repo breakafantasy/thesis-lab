@@ -77,9 +77,15 @@ export async function conclude(
   }
 
   const validIds = new Set(evidences.map((e) => e.id));
-  const evidenceIndex = (v.evidenceIndex as { evidenceId: string; stance: string }[]).filter((x) =>
-    validIds.has(x.evidenceId)
-  );
+  const STANCES: Evidence["stance"][] = ["support", "oppose", "unverifiable", "partial"];
+  const evidenceIndex: { evidenceId: string; stance: Evidence["stance"] }[] = (
+    v.evidenceIndex as { evidenceId: string; stance: string }[]
+  )
+    .filter((x) => validIds.has(x.evidenceId))
+    .map((x) => ({
+      evidenceId: x.evidenceId,
+      stance: (STANCES.includes(x.stance as Evidence["stance"]) ? x.stance : "unverifiable") as Evidence["stance"],
+    }));
   if (evidenceIndex.length === 0) {
     for (const e of evidences) evidenceIndex.push({ evidenceId: e.id, stance: e.stance });
   }

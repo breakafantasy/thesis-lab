@@ -111,7 +111,7 @@ export async function gatherEvidence(
           claim: sanClaim.text,
           reasoning:
             sanReason.text +
-            `（防伪造校验：输出中 ${sanClaim.stripped.concat(sanReason.stripped).join("、")} 未见于数据载荷，已替换为「见载荷」）`,
+            `（防伪造校验：输出中含未见于数据载荷的数值，已替换为「见载荷」）`,
           payloadIds: (e.payloadIds as string[]).filter((pid) => sqPayloads.some((p) => p.id === pid)),
           confidence: e.confidence as number,
           status: (e.status as Evidence["status"]) ?? "ok",

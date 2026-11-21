@@ -1,6 +1,6 @@
 // 步骤三：拆解为可验证子问题（AI 角色：命题分析师）
 
-import { chatJSON, isObj, isStrArray } from "../llm";
+import { chatJSON, isObj } from "../llm";
 import { PROMPT_DECOMPOSE } from "../prompts";
 import type { DataNeed, SubQuestion, Thesis } from "../types";
 

@@ -23,16 +23,20 @@ const cache = new Map<string, { at: number; result: ProviderResult }>();
 const CACHE_TTL = 5 * 60_000;
 
 async function tryProvider(p: DataProvider, q: ProviderQuery, timeoutMs: number, faultDemo: boolean): Promise<ProviderResult | null> {
-  if (!p.available()) return null;
   if (faultDemo && p.id !== "snapshot") {
+    // 故障演示：无论真实源是否配置，统一表现为故障 → 走降级链路
+    const reason = p.available()
+      ? `${p.id} 接口不可用（故障演示模式已开启）`
+      : `${p.id} 数据源未配置（故障演示模式已开启）`;
     return {
       status: "error",
-      statusNote: `模拟故障：${p.id} 数据源不可用（故障演示模式已开启）`,
+      statusNote: `模拟故障：${reason}`,
       points: [],
       materials: [],
       fetchedAt: new Date().toISOString(),
     };
   }
+  if (!p.available()) return null;
   return withTimeout(p.fetch(q), timeoutMs, p.id);
 }
 
@@ -48,6 +52,7 @@ export async function fetchData(need: DataNeed, subQuestionId: string, opts: Fet
 
   let result: ProviderResult | null = null;
   let used: DataSourceId = need.source;
+  let primaryError: string | null = null;
 
   for (const p of chainFor(need.source)) {
     const r = await tryProvider(p, q, timeoutMs, !!opts.faultDemo);
@@ -57,8 +62,9 @@ export async function fetchData(need: DataNeed, subQuestionId: string, opts: Fet
       used = p.id;
       break;
     }
-    // status=error：记录并降级到下一个 provider
+    // status=error：记录失败原因并降级到下一个 provider
     result = r;
+    if (p.id !== "snapshot") primaryError = r.statusNote ?? `${p.id} 数据源异常`;
   }
 
   if (!result) {
@@ -74,15 +80,21 @@ export async function fetchData(need: DataNeed, subQuestionId: string, opts: Fet
   if (result.status === "ok" && used === need.source && !opts.faultDemo) {
     cache.set(cacheKey, { at: Date.now(), result });
   }
-  return buildPayload(need, subQuestionId, result, used);
+  return buildPayload(need, subQuestionId, result, used, primaryError);
 }
 
-function buildPayload(need: DataNeed, subQuestionId: string, result: ProviderResult, used: DataSourceId): DataPayload {
+function buildPayload(
+  need: DataNeed,
+  subQuestionId: string,
+  result: ProviderResult,
+  used: DataSourceId,
+  primaryError?: string | null
+): DataPayload {
   const degraded = used !== need.source && result.status === "ok";
   const status = degraded ? "degraded" : result.status;
   const statusNote =
     result.status === "ok" && used !== need.source
-      ? `原数据源 ${need.source} 不可用，已降级至 ${used}${result.statusNote ? `（${result.statusNote}）` : ""}`
+      ? `原数据源 ${need.source} 不可用${primaryError ? `（${primaryError}）` : ""}，已降级至 ${used}${result.statusNote ? `（${result.statusNote}）` : ""}`
       : result.statusNote;
   return {
     id: `P-${crypto.randomUUID().slice(0, 8)}`,

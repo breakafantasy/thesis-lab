@@ -2,8 +2,8 @@
 // 通过 MCP Streamable HTTP（JSON-RPC 2.0）调用远程 MCP 服务；
 // 工具名按关键词匹配（公告/研报/行业/公司），不依赖具体命名。
 
-import type { DataPoint, MaterialRef, ProviderQuery, ProviderResult } from "../types";
-import { nowISO, type DataProvider } from "./provider";
+import type { DataPoint, MaterialRef } from "../types";
+import { nowISO, type DataProvider, type ProviderQuery, type ProviderResult } from "./provider";
 
 const mcpUrl = () => (process.env.IFIND_MCP_URL || "").trim();
 const token = () => process.env.IFIND_MCP_TOKEN || "";

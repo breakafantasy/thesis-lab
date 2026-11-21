@@ -148,7 +148,7 @@ function PayloadDetail({ payload }: { payload: DataPayload }) {
           ))}
         </div>
       )}
-      {payload.raw && (
+      {payload.raw != null && (
         <details className="mt-2">
           <summary className="cursor-pointer text-gray-400 hover:text-gray-600">查看接口原始返回</summary>
           <pre className="mt-1 max-h-48 overflow-auto rounded bg-gray-900 p-2 text-[10px] leading-relaxed text-gray-300">
