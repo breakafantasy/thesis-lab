@@ -52,8 +52,23 @@ export async function decomposeThesis(thesis: Thesis): Promise<SubQuestion[]> {
 }
 
 /** 防伪造扫描辅助：检查文本中的数字是否全部来自载荷 */
+// 零宽字符（LLM 偶发输出）会拆散数字，先清除
+const ZERO_WIDTH_CHARS = [
+  String.fromCharCode(0x200b),
+  String.fromCharCode(0x200c),
+  String.fromCharCode(0x200d),
+  String.fromCharCode(0xfeff),
+];
+function stripZeroWidth(s: string): string {
+  let out = s;
+  for (const c of ZERO_WIDTH_CHARS) out = out.split(c).join("");
+  return out;
+}
+// 只匹配「独立数字 token」：前后不能是字母/下划线/点/横线（保护载荷 ID、证据 ID、日期中的数字段）
+const NUM_TOKEN = /(?<![\w.-])(-?\d+(?:\.\d+)?%?)(?![\w])/g;
+
 export function numbersIn(text: string): string[] {
-  return text.match(/\d+(?:\.\d+)?%?/g) ?? [];
+  return stripZeroWidth(text).match(NUM_TOKEN) ?? [];
 }
 
 export function findForeignNumbers(text: string, knownNumbers: Set<string>): string[] {
@@ -63,14 +78,20 @@ export function findForeignNumbers(text: string, knownNumbers: Set<string>): str
   });
 }
 
+function escapeRegExp(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 /** 把载荷中没有的数字替换为「见载荷」（防伪造兜底，优先于 LLM 重试） */
 export function sanitizeNumbers(text: string, knownNumbers: Set<string>): { text: string; stripped: string[] } {
+  const clean = stripZeroWidth(text);
   const stripped: string[] = [];
-  let out = text;
-  for (const n of numbersIn(text)) {
+  let out = clean;
+  for (const n of numbersIn(clean)) {
     const core = n.replace(/%$/, "");
     if (!knownNumbers.has(core) && !knownNumbers.has(n)) {
-      out = out.replaceAll(n, "见载荷");
+      // 只替换独立的数字 token，不误伤「2024」「P-b9ca6ebc」等更大 token 内部的数字
+      out = out.replace(new RegExp(`(?<![\\w.-])${escapeRegExp(n)}(?![\\w])`, "g"), "见载荷");
       if (!stripped.includes(n)) stripped.push(n);
     }
   }

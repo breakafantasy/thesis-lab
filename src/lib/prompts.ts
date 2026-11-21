@@ -62,15 +62,16 @@ export const PROMPT_REVISE = `${ROLE_BASE}
 export const PROMPT_DECOMPOSE = `${ROLE_BASE}
 【当前任务】把修订后的投资命题拆解为可验证子问题，并为每个子问题设计数据查询计划。
 
-可用数据源与查询类型（只能使用以下组合）：
-- fuyao（A股行情与财务数据）：
-  kind="quote"     参数 params={"codes": "股票代码如600104.SH"}        行情快照
-  kind="kline"     参数 params={"codes": "...", "start_date": "...", "end_date": "..."}  历史K线
-  kind="financial" 参数 params={"codes": "...", "periods": "报告期如2024-12-31,2023-12-31", "fields": "字段如revenue,net_profit"} 财务报表
-  kind="indicator" 参数 params={"codes": "...", "periods": "...", "fields": "指标如roe,gross_margin,deducted_net_profit"} 财务指标
-  kind="valuation" 参数 params={"codes": "...", "periods": "..."}      估值
-  kind="index"     参数 params={"codes": "指数代码"}                    指数
-  kind="sector"    参数 params={"codes": "板块代码"}                    板块
+可用数据源与查询类型（只能使用以下组合；标的用 thscode 如 300489.SZ）：
+- fuyao（A股行情/财务/估值）：
+  kind="search"    参数 params={"q": "公司名或代码"}                  检索标的代码（不确定 thscode 时先用）
+  kind="quote"     参数 params={"codes": "300489.SZ"}                 行情快照
+  kind="kline"     参数 params={"codes": "...", "start_date": "20240101", "end_date": "20241231"} 历史日K（前复权）
+  kind="financial" 参数 params={"codes": "...", "period": "annual|quarterly", "limit": "4"} 利润表多期序列（含营收、归母净利润等；返回的是「最近 N 期」，务必 limit≥4 以覆盖命题对比所需的全部年度，如同时需要 2024 与 2023 年数据时写 limit=4）
+  kind="indicator" 参数 params={"codes": "...", "report": "2024-4"}   单报告期财务指标（成长/盈利/偿债/营运/现金流五类，如扣非净利润、毛利率）；对比多个报告期需拆成多条 dataNeed
+  kind="valuation" 参数 params={"codes": "..."}                       估值快照（PE/PB/PS 等）
+  kind="index"     参数 params={"codes": "指数代码"}                  指数行情快照
+  kind="sector"    参数 params={"codes": "个股代码"}                  个股所属行业/板块反查
 - ifind（公告/研报/行业及公司数据）：
   kind="announcements" params={"codes": "...", "keyword": "关键词", "start_date": "...", "end_date": "..."} 公告检索
   kind="research"      params={"codes": "...", "keyword": "关键词"}     研报检索

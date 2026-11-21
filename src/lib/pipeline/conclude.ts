@@ -63,10 +63,10 @@ export async function conclude(
   // 防伪造：statement 中的数值必须来自载荷
   const statement = sanitizeNumbers(v.statement as string, knownNumbers).text;
 
-  // 确定性兜底：证据或载荷缺失/异常占比 ≥ 1/3 → 无法判断
-  // 说明：降级到内置快照（status=degraded）属于「数据仍可用但来源降级」，不触发强制无法判断，
-  // 但会在证据载荷中如实标注；status=error/empty 才视为证据缺失。
-  const weakEvidences = evidences.filter((e) => e.status !== "ok").length;
+  // 确定性兜底：真·无数据的证据/载荷占比 ≥ 1/3 → 无法判断
+  // 说明：degraded（降级到内置快照）数据仍可用（真实年报数据），只如实标注来源，不算弱证据；
+  // 只有 empty（无数据）/error（异常）才视为证据缺失。
+  const weakEvidences = evidences.filter((e) => e.status === "empty" || e.status === "error").length;
   const weakPayloads = payloads.filter((p) => p.status === "error" || p.status === "empty").length;
   const weak = weakEvidences + weakPayloads;
   let level = v.level as VerdictLevel;
