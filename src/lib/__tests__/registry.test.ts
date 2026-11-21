@@ -54,4 +54,20 @@ describe("数据路由与降级", () => {
     expect(p.materials.length).toBe(1);
     expect(p.materials[0].title).toContain("测试股份");
   });
+
+  it("演示案例（光智科技 300489.SZ）快照数据可命中", async () => {
+    const indicator = await fetchData(
+      { source: "fuyao", kind: "indicator", params: { codes: "300489.SZ", periods: "2024-12-31,2023-12-31", fields: "revenue" }, queryDescription: "演示案例财务指标" },
+      "SQ-T5"
+    );
+    expect(indicator.status).toBe("degraded"); // 快照兜底并如实标注
+    expect(indicator.points.length).toBeGreaterThanOrEqual(6);
+
+    const announcement = await fetchData(
+      { source: "ifind", kind: "announcements", params: { codes: "300489.SZ", keyword: "光智科技 非经常性损益" }, queryDescription: "演示案例公告" },
+      "SQ-T6"
+    );
+    expect(announcement.materials.length).toBe(1);
+    expect(announcement.materials[0].title).toContain("年度报告");
+  });
 });

@@ -7,7 +7,7 @@ import type { ClarificationQuestion } from "@/lib/types";
 import type { ClarificationAnswer } from "@/lib/pipeline/clarify";
 
 const EXAMPLES = [
-  "贵州茅台 2024 年盈利改善主要来自主营业务",
+  "光智科技 2024 年盈利改善主要来自主营业务",
   "宁德时代估值回落但基本面未恶化",
   "新能源汽车购置税优惠退坡将影响产业链利润分配",
 ];
@@ -51,7 +51,7 @@ export default function ThesisComposer({ phase, clarify, advisory, error, onRun,
         onChange={(e) => setText(e.target.value)}
         disabled={busy}
         rows={3}
-        placeholder="例如：贵州茅台 2024 年盈利改善主要来自主营业务"
+        placeholder="例如：光智科技 2024 年盈利改善主要来自主营业务"
         className="mt-3 w-full resize-none rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none disabled:bg-gray-50"
       />
       <div className="mt-2 flex flex-wrap items-center gap-2">
