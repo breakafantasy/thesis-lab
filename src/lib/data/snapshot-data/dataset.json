@@ -1,0 +1,37 @@
+{
+  "entries": [
+    {
+      "source": "fuyao",
+      "kind": "indicator",
+      "matchKey": "codes",
+      "matchValue": "000000.SZ",
+      "points": [
+        { "label": "归母净利润", "period": "2024-12-31", "value": 320, "unit": "百万元" },
+        { "label": "归母净利润", "period": "2023-12-31", "value": 210, "unit": "百万元" },
+        { "label": "扣非净利润", "period": "2024-12-31", "value": 30, "unit": "百万元" },
+        { "label": "扣非净利润", "period": "2023-12-31", "value": 26, "unit": "百万元" },
+        { "label": "营业收入", "period": "2024-12-31", "value": 5200, "unit": "百万元" },
+        { "label": "营业收入", "period": "2023-12-31", "value": 5050, "unit": "百万元" }
+      ],
+      "materials": [],
+      "note": "内置快照·测试标的（000000.SZ 测试股份，合成数据，仅用于自动化测试，不用于演示）"
+    },
+    {
+      "source": "ifind",
+      "kind": "announcements",
+      "matchKey": "keyword",
+      "matchValue": "测试股份",
+      "points": [],
+      "materials": [
+        {
+          "type": "announcement",
+          "title": "测试股份：2024 年年度报告（合成测试数据）",
+          "source": "内置快照",
+          "date": "2025-04-30",
+          "quote": "本公告为自动化测试用合成数据，不构成任何真实信息。"
+        }
+      ],
+      "note": "内置快照·测试标的（合成数据，仅用于自动化测试，不用于演示）"
+    }
+  ]
+}
