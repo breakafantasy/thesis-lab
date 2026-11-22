@@ -21,21 +21,77 @@ function validateArbitrate(v: unknown): string | null {
   return null;
 }
 
-/** 冲突对检测：同一子问题下 support/partial 与 oppose 同时存在即视为冲突 */
+/** 冲突配对时的停用词（2 字片段），避免「数据/载荷」等通用词造成误配对 */
+const STOP_BIGRAMS = new Set([
+  "载荷", "数据", "证据", "支持", "反对", "无法", "验证", "归类", "断言",
+  "问题", "命题", "该子", "见载", "显示", "提供", "说明", "状态", "来源",
+  "理由", "降级", "为空", "返回", "查询",
+]);
+
+/** 提取证据文本中的中文 2 字片段（跳过停用词），用于跨子问题冲突配对 */
+function terms(text: string): Set<string> {
+  const out = new Set<string>();
+  for (const m of text.match(/[一-龥]+/g) ?? []) {
+    for (let i = 0; i + 2 <= m.length; i++) {
+      const seg = m.slice(i, i + 2);
+      if (!STOP_BIGRAMS.has(seg)) out.add(seg);
+    }
+  }
+  return out;
+}
+
+function overlapScore(a: Evidence, b: Evidence): number {
+  const ta = terms(`${a.claim} ${a.reasoning}`);
+  const tb = terms(`${b.claim} ${b.reasoning}`);
+  let n = 0;
+  for (const t of ta) if (tb.has(t)) n++;
+  return n;
+}
+
+/**
+ * 冲突对检测：
+ * 1) 同一子问题下 support/partial 与 oppose 并存；
+ * 2) 跨子问题：反对证据与支持证据讨论同一组财务概念（关键词重叠 ≥2）时也视为
+ *    命题要件之间的冲突——例如「归母改善（支持）」与「扣非为负（反对）」。
+ * 上限 4 对，按相关性排序。
+ */
 export function detectConflicts(evidences: Evidence[]): { a: Evidence; b: Evidence }[] {
-  const pairs: { a: Evidence; b: Evidence }[] = [];
+  const pairs: { a: Evidence; b: Evidence; score: number }[] = [];
   const bySq = new Map<string, Evidence[]>();
   for (const e of evidences) {
     const list = bySq.get(e.subQuestionId) ?? [];
     list.push(e);
     bySq.set(e.subQuestionId, list);
   }
+  // 同子问题内
   for (const list of bySq.values()) {
     const pro = list.filter((e) => e.stance === "support" || e.stance === "partial");
     const con = list.filter((e) => e.stance === "oppose");
-    for (const a of pro) for (const b of con) pairs.push({ a, b });
+    for (const a of pro) for (const b of con) pairs.push({ a, b, score: 2 });
   }
-  return pairs;
+  // 跨子问题：每条反对证据配对一条最相关的支持证据
+  const pros = evidences.filter((e) => e.stance === "support" || e.stance === "partial");
+  const cons = evidences.filter((e) => e.stance === "oppose");
+  for (const b of cons) {
+    let best: { a: Evidence; score: number } | null = null;
+    for (const a of pros) {
+      if (a.subQuestionId === b.subQuestionId) continue; // 同子问题已在上面处理
+      const s = overlapScore(a, b);
+      if (s >= 2 && (!best || s > best.score)) best = { a, score: s };
+    }
+    if (best) pairs.push({ a: best.a, b, score: best.score });
+  }
+  // 去重 + 按相关性排序 + 上限 4
+  const seen = new Set<string>();
+  const out: { a: Evidence; b: Evidence }[] = [];
+  for (const p of pairs.sort((x, y) => y.score - x.score)) {
+    const key = [p.a.id, p.b.id].sort().join("|");
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push({ a: p.a, b: p.b });
+    if (out.length >= 4) break;
+  }
+  return out;
 }
 
 export async function arbitrateConflicts(evidences: Evidence[], payloads: DataPayload[]): Promise<ConflictPair[]> {
